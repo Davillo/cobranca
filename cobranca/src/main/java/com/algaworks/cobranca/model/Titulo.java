@@ -35,15 +35,7 @@ public class Titulo {
 	
 	@Enumerated(EnumType.STRING)
 	private StatusTitulo status;
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	public Long getCodigo() {
 		return codigo;
 	}
