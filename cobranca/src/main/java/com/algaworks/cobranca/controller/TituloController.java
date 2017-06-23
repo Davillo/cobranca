@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.algaworks.cobranca.model.StatusTitulo;
 import com.algaworks.cobranca.model.Titulo;
 import com.algaworks.cobranca.repository.Titulos;
+import com.algaworks.cobranca.service.CadastroTituloService;
 
 @Controller
 @RequestMapping("/titulos")
@@ -27,6 +29,8 @@ public class TituloController {
 	@Autowired
 	private Titulos tituloDAO;
 	
+	@Autowired
+	private CadastroTituloService cadTituloService;
 	
 	@RequestMapping("/novo")
 	private ModelAndView novo() {
@@ -41,9 +45,16 @@ public class TituloController {
 		if(errors.hasErrors()){
 			return CADASTRO_VIEW;
 		}
-		tituloDAO.save(titulo);
-		atributos.addFlashAttribute("mensagem", "Título salvo com sucesso!");
-		return "redirect:/titulos/novo";
+		
+		try{
+			cadTituloService.salvar(titulo);
+			atributos.addFlashAttribute("mensagem", "Título salvo com sucesso!");
+			return "redirect:/titulos/novo";
+		}catch (IllegalArgumentException e) {
+			errors.rejectValue("dataVencimento", null,e.getMessage());
+			return CADASTRO_VIEW;
+		}
+	
 	}
 	
 	
@@ -55,9 +66,9 @@ public class TituloController {
 	}
 	
 	
-	@RequestMapping(value = "{codigo}",method = RequestMethod.DELETE)
-	private String excluir(@PathVariable Long codigo){
-		tituloDAO.delete(codigo);
+	@RequestMapping(value = "{codigo}",method = RequestMethod.DELETE) // valor de request DELETE enviado por um input hidden
+	private String excluir(@PathVariable Long codigo){ // código enviado no clique do modal
+		cadTituloService.excluir(codigo);
 		return "redirect:/titulos";
 	}
 	

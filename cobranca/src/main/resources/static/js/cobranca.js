@@ -15,3 +15,10 @@ $('#confirmacaoExclusaoModal').on('show.bs.modal', function(event) {
 	modal.find('.modal-body span').html('Tem certeza que deseja excluir o título <strong>' + descricaoTitulo + '</strong>?');
 	//exibe o modal com o corpo contendo a descrição do título.
 });
+
+
+$(function (){
+		$('[rel = "tooltip"]').tooltip();
+		$('.js-currency').maskMoney({decimal:',',thousands:'.',allowZero:true});
+	
+});
