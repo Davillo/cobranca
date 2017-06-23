@@ -1,32 +1,46 @@
 $('#confirmacaoExclusaoModal').on('show.bs.modal', function(event) {
-	var button = $(event.relatedTarget); // pega o evento disparado pelo botão do modal
+	var button = $(event.relatedTarget);
 	
-	var codigoTitulo = button.data('codigo'); // pega o código pelo data-target
-	var descricaoTitulo = button.data('descricao'); // pega a descrição pelo data-target
+	var codigoTitulo = button.data('codigo');
+	var descricaoTitulo = button.data('descricao');
 	
-	var modal = $(this); // modal recebe  o modal passado
-	var form = modal.find('form'); // modal encontra o form
-	var action = form.data('url-base'); // modal pega a ação
+	var modal = $(this);
+	var form = modal.find('form');
+	var action = form.data('url-base');
 	if (!action.endsWith('/')) {
-		action += '/'; // concatena com /
+		action += '/';
 	}
-	form.attr('action', action + codigoTitulo); //pega a ação e passa o código
+	form.attr('action', action + codigoTitulo);
 	
 	modal.find('.modal-body span').html('Tem certeza que deseja excluir o título <strong>' + descricaoTitulo + '</strong>?');
-	//exibe o modal com o corpo contendo a descrição do título.
 });
 
-
-$(function (){
-		$('[rel = "tooltip"]').tooltip();
-		$('.js-currency').maskMoney({decimal:',',thousands:'.',allowZero:true});
-		
-		$('.js-atualizar-status').on('click', function(event){
-			event.preventDefault();
-			var botaoReceber = $(event.currentTarget);
-			var urlReceber = botaoReceber.attr('href');
-			console.log('urlReceber',urlReceber);
-			
-		});
+$(function() {
+	$('[rel="tooltip"]').tooltip();
+	$('.js-currency').maskMoney({decimal: ',', thousands: '.', allowZero: true});
 	
+	$('.js-atualizar-status').on('click', function(event) {
+		event.preventDefault();
+		
+		var botaoReceber = $(event.currentTarget);
+		var urlReceber = botaoReceber.attr('href');
+		
+		var response = $.ajax({
+			url: urlReceber,
+			type: 'PUT'
+		});
+		
+		
+		response.done(function(e) {
+			var codigoTitulo = botaoReceber.data('codigo');
+			$('[data-role=' + codigoTitulo + ']').html('<span class="label label-success">' + e + '</span>');
+			botaoReceber.hide();
+		});
+		
+		response.fail(function(e) {
+			console.log(e);
+			alert('Erro recebendo cobrança');
+		});
+		
+	});
 });
